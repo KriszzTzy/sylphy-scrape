@@ -218,52 +218,6 @@ class KuronimeScraper {
     return { success: false, embedUrl: null, sources: null, downloads: null };
   }
 
-  async cariDanTonton(judul, episodeKe = 1) {
-    const hasilSearch = await this.search(judul);
-    if (!hasilSearch.length) return { success: false, pesan: `Anime "${judul}" gak ketemu` };
-
-    const detail = await this.getAnimeDetail(hasilSearch[0].url);
-    if (!detail.episodes.length) return { success: false, pesan: "Gak ada episode" };
-
-    let target;
-    if (episodeKe === "terbaru") {
-      target = detail.episodes[0];
-    } else if (typeof episodeKe === "number") {
-      target = detail.episodes.find((ep) =>
-        ep.episode.includes(String(episodeKe)) || ep.title.includes(`Episode ${episodeKe}`)
-      ) || detail.episodes[episodeKe - 1];
-    } else {
-      target = detail.episodes[0];
-    }
-
-    if (!target) return { success: false, pesan: `Episode ${episodeKe} gak ketemu` };
-
-    const stream = await this.getStreamingLink(target.url);
-
-    return {
-      success: stream.success,
-      anime: detail.title,
-      japaneseTitle: detail.japaneseTitle,
-      thumbnail: detail.thumbnail,
-      synopsis: detail.synopsis,
-      genres: detail.genres,
-      status: detail.status,
-      studio: detail.studio,
-      aired: detail.aired,
-      season: detail.season,
-      type: detail.type,
-      duration: detail.duration,
-      totalEpisode: detail.totalEpisode,
-      totalEpisodeList: detail.episodes.length,
-      episode: target.title,
-      episodeUrl: target.url,
-      streamType: stream.type,
-      embedUrl: stream.embedUrl,
-      sources: stream.sources,
-      downloads: stream.downloads,
-    };
-  }
-
   async cmdSearch(query) {
     if (!query) return { success: false, pesan: 'Masukkan judul anime' };
     try {
